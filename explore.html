@@ -1,0 +1,1243 @@
+
+{% extends 'base.html'%}
+
+{% block content %}
+
+<div class="intro jobs-intro hasOverly" style="background-image:url('/static/img/background2.jpg'); background-position: center center; height: 25rem;">
+    <div class="dtable hw100" >
+        <div class="dtable-cell hw100">
+            <div class="container text-center">
+                <h1 class="intro-title animated fadeInDown"> Making job easier</h1>
+                <p class="sub animateme fittext3 animated fadeIn"> Find the latest jobs available in your area. </p>
+                <form class="row search-row animated fadeInUp" method="GET" action="/explore/">
+                    <div class="col-xl-4 col-sm-4 search-col relative locationicon">
+                        <i class="icon-location-2 icon-append"></i>
+                        <input type="text" class="form-control locinput input-rel searchtag-input has-icon" name="location" id="location" placeholder="City , State , Location">
+                    </div>
+                    <div class="col-xl-4 col-sm-4 search-col relative"><i class="icon-docs icon-append"></i>
+                        <input type="text" class="form-control has-icon" name="job_title" id="txtSearch" placeholder="Job Title">
+                    </div>
+                    <div class="col-xl-4 col-sm-4 search-col">
+                        <button type="submit" class="btn btn-primary btn-search btn-block">
+                            <i class="icon-search"></i><strong>Find Jobs</strong>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .ui-autocomplete {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        float: left;
+        display: none;
+        min-width: 160px;
+        padding: 4px 0;
+        list-style: none;
+        background-color: #ffffff;
+        border-color: #ccc;
+        border-color: rgba(0, 0, 0, 0.2);
+        border-style: solid;
+        border-width: 1px;
+        -webkit-border-radius: 2px;
+        -moz-border-radius: 2px;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        -webkit-background-clip: padding-box;
+        -moz-background-clip: padding;
+        background-clip: padding-box;
+        *border-right-width: 2px;
+        *border-bottom-width: 2px;
+    }
+    
+    .ui-menu-item > a.ui-corner-all {
+        display: block;
+        clear: both;
+        font-weight: normal;
+        line-height: 18px;
+        color: #555555;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+    
+    .ui-state-hover,
+    .ui-state-active {
+        color: #ffffff;
+        text-decoration: none;
+        background-color: #00c3a2;
+        border-radius: 0px;
+        -webkit-border-radius: 0px;
+        -moz-border-radius: 0px;
+        background-image: none;
+    }
+    
+    .btn-reset {
+        border: 0;
+        outline: 0;
+        background-color: transparent;
+    }
+    
+    .color-base {
+        color: #16A085 !important;
+    }
+    
+    .cat-list.arrow li {
+        text-align: left;
+        padding: 1px 14px !important;
+    }
+    
+    .jobs-desc {
+        width: 100%;
+    }
+    
+    .jobs-desc {
+        display: inline-block;
+        word-wrap: break-word;
+        overflow: hidden;
+        /* (Number of lines you want visible) * (line-height) */
+        line-height: 1.2em;
+        text-align: justify;
+        max-height: 1.4em;
+    }
+</style>
+<!---->
+<script>
+    $(function() {
+        $("#txtSearch").autocomplete({
+            source: "/api/get_job_title/",
+            select: function(event, ui) { //item selected
+                AutoCompleteSelectHandler(event, ui)
+            },
+            minLength: 2,
+        });
+    });
+
+    function AutoCompleteSelectHandler(event, ui) {
+        var selectedObj = ui.item;
+    }
+</script>
+<script>
+    $(function() {
+        $("#location").autocomplete({
+            source: "/api/location/",
+            select: function(event, ui) { //item selected
+                AutoCompleteSelectHandler(event, ui)
+            },
+            minLength: 2,
+        });
+    });
+
+    function AutoCompleteSelectHandler(event, ui) {
+        var selectedObj = ui.item;
+    }
+</script>
+<button onclick="getLocation()" style="display:none;">Try It</button>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latLng = position.coords.latitude + "," + position.coords.longitude;
+        var geocoder = geocoder = new google.maps.Geocoder();
+        geocoder.geocode({
+            'latLng': latLng
+        }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                    alert("Location: " + results[1].formatted_address);
+                }
+            }
+        });
+    }
+    //To use this code on your website, get a free API key from Google.
+    //Read more at: https://www.w3schools.com/graphics/google_maps_basic.asp
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.")
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.")
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+</script>
+<br />
+<br />
+<section id="job-listing">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 page-sidebar col-thin-left text-left">
+                <aside>
+                    <div class="inner-box">
+                        <h2 class="title-2">Top Job Categories </h2>
+                        <div class="inner-box-content">
+                            <ul class="cat-list arrow">
+                                <li><a href="/?q=mss"><i class="fa fa-angle-right"></i> MSS<span class="count"></span> </a></li>
+                                <li><a href="/?q=Research"><i class="fa fa-angle-right"></i> Research <span class="count"></span> </a></li>
+                                <li><a href="/?q=web security"><i class="fa fa-angle-right"></i> Web Security <span class="count"></span></a></li>
+                                <li><a href="/?q=vapt"><i class="fa fa-angle-right"></i> VA/PT <span class="count"></span></a></li>
+                                <li><a href="/?q=management"><i class="fa fa-angle-right"></i> Management<span class="count"></span></a></li>
+                                <li><a href="/?q=quality assurance"><i class="fa fa-angle-right"></i> Quality Assurance <span class="count"></span></a></li>
+                                <li><a href="/?q=development"><i class="fa fa-angle-right"></i> Development <span class="count"></span></a></li>
+                                <li><a href="/?q=consulting"><i class="fa fa-angle-right"></i> Consulting <span class="count"></span></a></li>
+                                <li><a href="/?q=risk assessment"><i class="fa fa-angle-right"></i> Risk Assessment/Auditing <span class="count"></span></a></li>
+                                <li><a href="/?q=training"><i class="fa fa-angle-right"></i> Training <span class="count"></span></a></li>
+                                <li><a href="/?q=forensics"><i class="fa fa-angle-right"></i> Forensics/IR <span class="count"></span></a></li>
+                                <li><a href="/?q=sales"><i class="fa fa-angle-right"></i> Sales/Marketing <span class="count"></span></a></li>
+                                <li><a href="/?q=internship"><i class="fa fa-angle-right"></i> Freshers/Internship <span class="count"></span></a></li>
+                                <li><a href="/?q=source code review"><i class="fa fa-angle-right"></i> Source Code Review <span class="count"></span></a></li>
+                                <li><a href="/?q=soc"><i class="fa fa-angle-right"></i> SOC/SIEM <span class="count"></span></a></li>
+                                <li><a href="/?q=mobile security"><i class="fa fa-angle-right"></i> Mobile Security <span class="count"></span></a></li>
+                                <li><a href="/?q=hardware"><i class="fa fa-angle-right"></i> Hardware/IoT <span class="count"></span></a></li>
+                                <li><a href="/?q=devops"><i class="fa fa-angle-right"></i> DevOps/DevSecOps <span class="count"></span></a></li>
+                                <li><a href="/?q=Infrastructure security"><i class="fa fa-angle-right"></i> Infrastructure Security <span class="count"></span></a></li>
+                                <li><a href="/?q=cloud"><i class="fa fa-angle-right"></i> Cloud Security <span class="count"></span></a></li>
+                                <li><a href="/?q=code security"><i class="fa fa-angle-right"></i> Infrastructure as code security <span class="count"></span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <div class="col-sm-9">
+                <div class="float-center">
+                    <form method="GET" class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Search Keywords">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary">Search</button>
+                        </span>
+                    </form>
+                    <br />
+                    <!--<center>
+                    <span class="text-danger"><a href="/" class="badge btn btn-danger">Clear keywords</a></span>
+                    </center>
+                    </div>-->
+                                        <!-- <div class="float-right" style="width:10rem;">
+                    <label for="sort-by">Sort By</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                    <option>Relevance</option>
+                    <option>Most Viewed</option>
+                    <option>Most Applied</option>
+                    <option>Recent</option>
+                    </select>
+                    </div> -->
+                    <span class="clearfix"></span>
+                </div>
+
+                <div class="col-sm-12">
+                    
+                </div>
+        
+                <div class="row">
+                    <div class="col-sm-12">
+                          
+                            
+                            
+                            
+                            
+
+                            <div class="page-content col-thin-right">
+                                    <div class="content-box col-xl-12">
+                                        <div class="row row-featured row-featured-category">
+                                            <div class="col-xl-12  box-title no-border">
+                                                <div class="inner">
+                                                        <h2><span>Latest</span>Jobs</h2>
+                                                 </div>
+                                            </div>
+
+                                            <div class="adds-wrapper jobs-list">
+                                                 
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">5&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1055)" href="/job_detail/"> Iot pentester</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 37 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">10&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1054)" href="/job_detail/"> Security consultant</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 39 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">4&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1053)" href="/job_detail/"> Soc analyst level-2</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 24 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">18&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1052)" href="/job_detail/"> Jr. security analyst - swiftsafe</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 40 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">5&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1051)" href="/job_detail/"> Malware analyst intern - swiftsafe</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> internship 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 21 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                SwiftSafe
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">11&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1050)" href="/job_detail/"> Ethical hacker and security researcher intern - swiftsafe</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Remote 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> internship 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Freshers/Internship
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 31 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Turtl Cyber Security Industry and Development Private Limited
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">7&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1049)" href="/job_detail/"> Security analyst</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Noida 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> VA/PT
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 21 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Trojan Hunt India LLP
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">2&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1048)" href="/job_detail/"> Senior consultant</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>New delhi 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> VA/PT
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 6 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Qadit Systems &amp; Solutions Pvt ltd
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">3&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1047)" href="/job_detail/"> Senior security testing engineer</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Chennai 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Web Security
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 10 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Eventus TechSol Pvt. Ltd
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">9&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1048)" href="/job_detail/"> Senior security testing engineer</a></h4>
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Ahmedabad 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> SOC/SIEM
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 23 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Eventus TechSol Pvt. Ltd
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">2&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1045)" href="/job_detail/"> Sr. secuirty analyst</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Ahmedabad 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> SOC/SIEM
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 6 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Eventus TechSol Pvt. Ltd
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">0&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Navi mumbai 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Forensics/IR
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 10 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Eventus TechSol Pvt. Ltd
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">6&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1043)" href="/job_detail/"> Security consultant</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Navi mumbai 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> VA/PT
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 7 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Trojan Hunt India LLP
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">3&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>New delhi 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> VA/PT
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 4 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                
+                                                    <div class="item-list job-item">
+                                                        <div class="row">
+                                                            
+                                                            <!--/.photobox-->
+                                                            <div class="col-sm-10  col-xs-10  add-desc-box">
+                                                                <div class="ads-details jobs-item">
+                                                                    <h5 class="company-title" style="float: left;">
+                                                                        
+                                                                                Trojan Hunt India LLP
+                                                                        
+                                                                    </h5>
+
+                                                                    <h5 style="float:right;">
+                                                                        <p class="badge badge-info" style="font-size:94% !important;">6&nbsp;applicants</p>
+                                                                    </h5>
+
+                                                                    <span class="clearfix" style="clear:both;display: inline-block;"></span>
+                                                                    <!--set the url for jobs details page-->
+                                                                    <h4 class="job-title"><a onclick="viewsUpdate(1040)" href="/job_detail/"> Cyber secuirty trainer</a></h4>
+
+                                                                    <span class="info-row">  
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-map-marker"></i>Delhi 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-bookmark"></i> full time 
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-list"></i> Training
+                                                                        </span>
+                                                                        <span class="item-location">
+                                                                            <i class="fa fa-eye"></i> 50 
+                                                                        </span>
+                                                                    </span>
+
+                                                                    <script>
+                                                                        function viewsUpdate(arg) {
+                                                                            $.ajax({
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    arg: arg,
+                                                                                    'csrfmiddlewaretoken': 'NSSpSr2bbMFcN5XnCxETcPSpN6GDJ9sHRStanMzOBB86wM1YTg2W3rhFJJ4RVEmT'
+                                                                                },
+                                                                                url: '/jobPostUpdate/',
+                                                                                success: function(data) {
+                                                                                    console.log(data);
+                                                                                },
+                                                                                error: function(err) {
+                                                                                    console.log(err);
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    </script>
+                                                            </div>
+                                                </div>
+                                                    
+                                        </div>
+                                    </div>
+                                <!--/.job-item-->
+                                <!--/.job-item-->
+                                 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <center>
+                <!-- / -->
+                
+                <ul class="pagination justify-content-center">
+                       
+                    <li class="page-item active"><span class="page-link">1 <span class="sr-only">(current)</span></span>
+                    </li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=2">2</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=6">6</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=7">7</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=8">8</a></li>
+                      
+                    <li class="page-item"><a class="page-link" href="?page=2">&raquo;</a></li>
+                    
+                </ul>
+                
+            </center>
+        </div>
+    </div>
+</section>
+<br />
+    <script>
+        $("input:checkbox").on('click', function() {
+            // in the handler, 'this' refers to the box clicked on
+            var $box = $(this);
+            if ($box.is(":checked")) {
+                // the name of the box is retrieved using the .attr() method
+                // as it is assumed and expected to be immutable
+                var group = "input:checkbox[name='" + $box.attr("name") + "']";
+                // the checked state of the group/box on the other hand will change
+                // and the current value is retrieved using .prop() method
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+            } else {
+                $box.prop("checked", false);
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            var url_string = window.location.href;
+            var url = new URL(url_string);
+            var c = url.searchParams.get("q");
+            $('input[name = q]').val(c);
+        })
+    </script>
+    
+       {% endblock content %}

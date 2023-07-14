@@ -1,0 +1,50 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+      
+<!---->
+
+<style>
+    @media (max-width: 767px) {
+        .intro h1 {
+            margin-top: 10% !important;
+        }
+    }
+</style>   
+<div class="main-container" style="margin-top:5%;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3 login-box">
+                <div class="card card-default">
+                     
+                    <div class="card-body">
+                      <form action="" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="H0sma42Jhm9sMC9hDdtArApcl8m8WYGd7f3Z3oFqbzHf64NiDzMuo45YUW7I6Vyz">
+                        <p><label for="id_email">Email:</label> <input type="email" name="email" maxlength="255" class="form-control" required id="id_email"></p>
+<p><label for="id_password">Password:</label> <input type="password" name="password" class="form-control" required id="id_password"></p>
+                        <br />
+                        <div class="login-section">
+                          <div class="float-right">
+                            <a href="/reset/">Forgot Password</a>
+                          </div>
+                          <span class="clearfix"></span>
+                        </div>
+                        <br/>
+                        <center>
+                          <div class="g-recaptcha" data-sitekey="6LfMsO8SAAAAAM9zXdECMOJwlNZhzeKa-1LLi7as"></div>
+                        </center>
+                        <br/>
+                        <input id="register_btn" class="btn btn-success btn-block" type="submit" value="Submit"/>
+                      </form>    
+                    </div>
+                        <div style=" clear:both"></div>
+                    </div>
+                </div>
+      
+            </div>
+        </div>
+    </div>
+
+
+  {% endblock content %}

@@ -1,0 +1,70 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+
+      
+   <div class="main-container" style="margin-top:5%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3 login-box">
+                    <div class="card card-default">
+                      
+                         
+
+                        <div class="card-body">
+
+                            <form  method="POST">
+                              {% csrf_token %}
+                              <input type="hidden" name="csrfmiddlewaretoken" value="fx8AY9f37XEbuIizwcF8xkJut3LlMhnLjxJltuMGxM75dpmaNV3boW8KpG9zYMhX">
+                              <p><label for="id_first_name">First name:</label> <input type="text" name="first_name" maxlength="255" class="form-control" required id="id_first_name"></p>
+<p><label for="id_last_name">Last name:</label> <input type="text" name="last_name" maxlength="255" class="form-control" required id="id_last_name"></p>
+<p><label for="id_email">Email:</label> <input type="email" name="email" maxlength="255" class="form-control" required id="id_email"></p>
+<p><label for="id_profile_type">Profile type:</label> <select name="profile_type" class="form-control" id="id_profile_type">
+  <option value="employee" selected>Job Seeker</option>
+
+  <option value="employer">Employer</option>
+
+</select></p>
+<p><label for="id_password">Password:</label> <input type="password" name="password" class="form-control" required id="id_password"></p>
+<p><label for="id_confirm_password">Confirm password:</label> <input type="password" name="confirm_password" class="form-control" required id="id_confirm_password"></p>
+                              <br />
+                              <center>
+                                <div class="g-recaptcha" data-sitekey="6LfMsO8SAAAAAM9zXdECMOJwlNZhzeKa-1LLi7as"></div>
+                              </center>
+                              <br />
+                              <input type="submit" id="register_btn" class="btn btn-primary btn-block" value="Submit"/>
+                          </form>    
+                        </div>
+                    
+                            
+
+                            <div style=" clear:both"></div>
+                        </div>
+                    </div>
+          
+                </div>
+            </div>
+        </div>
+
+
+
+
+<script>
+  $('#id_profile_type').change(function(){
+    if(this.value == "employer"){
+      var arr = ['gmail.com' , 'yahoo.co.in' , 'yahoo.com' , 'rediffmail.com' , 'vsnl.co.in' , 'rediffmail.co.in' , 'hotmail.com'];
+      var email = $('#id_email').val();
+      var domain = email.substring(email.lastIndexOf("@") +1);
+      domain = domain.trim();
+      if(arr.includes(domain)){
+        $.mdtoast('Employer needs a buisness email!');
+        return false;
+      }else{
+        console.log('Sucessfully Validated!');
+      }
+    }
+  });
+</script>
+
+       {% endblock content %}

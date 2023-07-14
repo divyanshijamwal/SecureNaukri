@@ -1,0 +1,62 @@
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="container">
+            <div class="row">
+                <div class=" col-xl-4 col-xl-4 col-md-4 col-4">
+                    <div class="footer-col">
+                        <h4 class="footer-title">About us</h4>
+                        <ul class="list-unstyled footer-nav">
+                            <li><a href="{% url 'about'%}">About us</a></li>
+                            <li><a href="{% url 'employer'%}">For Employer</a></li>
+                            <li><a href="{% url 'privacy'%}">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class=" col-xl-4 col-xl-4 col-md-4 col-4">
+                    <div class="footer-col">
+                        <h4 class="footer-title">Help & Contact</h4>
+                        <ul class="list-unstyled footer-nav">
+                            <li><a href="{% url 'contact'%}">
+                                Contact Us</a></li>
+                            <li><a href="{% url 'explore'%}">
+                                Explore Jobs</a></li></a></li>
+                            <li><a href="{% url 'rules'%}">Job posting Rules</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class=" col-xl-4 col-xl-4 col-md-4 col-4">
+                    <div class="footer-col">
+                        <h4 class="footer-title">Account</h4>
+                        <ul class="list-unstyled footer-nav">
+                            
+                                <li><a href="{% url 'manage'%}"> Manage Account</a></li>
+                                <li><a href="{% url 'login'%}">Login</a></li>
+                                <li><a href="{% url 'signup'%}">Signup</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div style="clear: both"></div><br/>
+                <div class="col-xl-12">
+                    <div class="copy-info text-center">
+                        &copy; &nbsp;<span id="year"></span>SecureNaukri 2023. All Rights Reserved.
+                    </div>
+                </div>
+
+                <script>
+                        var d = new Date();
+                        var n = d.getFullYear();
+                        document.getElementById("year").innerHTML = n;
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+</footer>
+</body>
+</html>
+                                                      
